@@ -1,6 +1,7 @@
 package com.example.socar.car;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,17 +18,15 @@ RestController (케이크 배달 가게): 필요한 데이터를 직접 전달�
  * @ResponseBody 사용: 요청을 받으면 데이터를 그대로 돌려줌.
  * */
 
-@RestController
-@RequestMapping("/api/car")
-public class CarController {
+@Service
+public class CarService {
 
     @Autowired
     private CarRepository carRepository;
 
-    @GetMapping("/all")
-    @ResponseBody
     public List<Car> getAllCars() {
+        // 여기서 비즈니스 로직을 처리할 수 있습니다.
+        // 예를 들어, 데이터를 가공하거나 검증할 수 있습니다.
         return carRepository.findAll();
     }
-
 }
