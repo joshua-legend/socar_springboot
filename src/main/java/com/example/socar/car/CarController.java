@@ -1,10 +1,9 @@
 package com.example.socar.car;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,12 +21,27 @@ RestController (케이크 배달 가게): 필요한 데이터를 직접 전달�
 public class CarController {
 
     @Autowired
-    private CarRepository carRepository;
-
+    private CarService carService;
     @GetMapping("/all")
-    @ResponseBody
-    public List<Car> getAllCars() {
-        return carRepository.findAll();
+    public ResponseEntity<List<Car>> getAllCars() {
+        try {
+            List<Car> cars = carService.getAllCars();
+            return ResponseEntity.ok(cars);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addCar(@RequestBody Car car) {
+        try {
+            carService.saveCar(car);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Car added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding car");
+        }
+    }
+
 
 }

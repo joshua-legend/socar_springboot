@@ -25,8 +25,9 @@ public class CarService {
     private CarRepository carRepository;
 
     public List<Car> getAllCars() {
-        // 여기서 비즈니스 로직을 처리할 수 있습니다.
-        // 예를 들어, 데이터를 가공하거나 검증할 수 있습니다.
         return carRepository.findAll();
+    }
+    public void saveCar(Car car) {
+        carRepository.save(car);
     }
 }
