@@ -2,19 +2,22 @@ package com.example.socar.admin;
 
 
 import com.example.socar.car.Car;
+import com.example.socar.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
+
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
 public class AdminController {
 
     @Autowired
@@ -22,6 +25,9 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Admin admin){
@@ -35,13 +41,30 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody Admin admin, HttpServletResponse response){
+    public ResponseEntity<String> login(@RequestBody Admin admin) {
+        try {
+            Admin existingAdmin = adminService.getAdminByAdminId(admin.getAdminId());
+            if (existingAdmin != null && passwordEncoder.matches(admin.getPassword(), existingAdmin.getPassword())) {
+                String token = jwtUtil.generateToken(admin.getAdminId());
+                return ResponseEntity.ok(token);  // JWT 토큰을 응답으로 반환
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid admin ID or password");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during login");
+        }
+    }
+
+
+
+    @PostMapping("/cookie/login")
+    public ResponseEntity<String> cookieLogin(@RequestBody Admin admin, HttpServletResponse response) {
         try {
             Admin existingAdmin = adminService.getAdminByAdminId(admin.getAdminId());
             if (existingAdmin != null && passwordEncoder.matches(admin.getPassword(), existingAdmin.getPassword())) {
                 Cookie cookie = new Cookie("success-token", "your-success-token-value");
-                cookie.setHttpOnly(true); // XSS 공격 방지
-                cookie.setPath("/"); // 쿠키의 유효 경로 설정
+                cookie.setHttpOnly(false);
+                cookie.setPath("/");
                 response.addCookie(cookie);
                 return ResponseEntity.ok("Login successful");
             } else {
