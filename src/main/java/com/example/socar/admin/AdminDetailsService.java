@@ -12,12 +12,19 @@ import java.util.Collections;
 @Service
 public class AdminDetailsService implements UserDetailsService {
 
+    private final AdminRepository adminRepository;
+
+    // 생성자 주입 사용
     @Autowired
-    private AdminRepository adminRepository;
+    public AdminDetailsService(AdminRepository adminRepository) {
+        this.adminRepository = adminRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Admin admin = adminRepository.findByAdminId(username);
+        System.out.println("adminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadmin");
+        System.out.println(admin);
         if(admin == null) throw new UsernameNotFoundException("그런 유저 없음");
         return new User(admin.getAdminId(), admin.getPassword(), Collections.emptyList());
     }

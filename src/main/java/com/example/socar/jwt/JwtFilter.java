@@ -17,13 +17,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private JwtUtil jwtUtil;
-
     private AdminDetailsService adminDetailsService;
+    private List<String> excludeUrls = Arrays.asList("/api/admin/login", "/api/admin/register");
 
 
     public JwtFilter(JwtUtil jwtUtil, AdminDetailsService adminDetailsService) {
@@ -33,6 +34,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+
+
+        String requestURI = request.getRequestURI();
+        System.out.println(excludeUrls.stream().anyMatch(url -> url.equals(requestURI)));
+        if (requestURI.equals("/api/admin/login")) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -66,7 +75,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
-    @Autowired
+
     private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
         ApiResponse<String> errorResponse = new ApiResponse<>("ERROR", HttpServletResponse.SC_UNAUTHORIZED, 0, message);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
