@@ -41,12 +41,20 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Admin admin) {
+    public ResponseEntity<String> login(@RequestBody Admin admin,HttpServletResponse response) {
         try {
             Admin existingAdmin = adminService.getAdminByAdminId(admin.getAdminId());
             if (existingAdmin != null && passwordEncoder.matches(admin.getPassword(), existingAdmin.getPassword())) {
                 String token = jwtUtil.generateToken(admin.getAdminId());
-                return ResponseEntity.ok(token);  // JWT 토큰을 응답으로 반환
+                System.out.println(token);
+                // JWT 토큰을 쿠키에 설정
+                Cookie cookie = new Cookie("jwt-token", token);
+                cookie.setHttpOnly(false); // XSS 공격 방지 true이면 자바스크립트로 확인 불가능함 ㅅㄱ
+                cookie.setSecure(false); // HTTPS에서만 사용 (개발 중에는 필요에 따라 false로 설정)
+                cookie.setPath("/"); // 쿠키의 유효 경로 설정
+                cookie.setMaxAge(60); // 쿠키의 유효기간 설정 (예: 1분)
+                response.addCookie(cookie);
+                return ResponseEntity.ok("Login successful");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid admin ID or password");
             }
