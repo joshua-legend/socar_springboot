@@ -11,10 +11,10 @@ public class JwtController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping("/generate")
-    public String generateToken(@RequestParam String username) {
-        return jwtUtil.generateToken(username);
-    }
+//    @GetMapping("/generate")
+//    public String generateToken(@RequestParam String username) {
+//        return jwtUtil.generateToken(username);
+//    }
 
     @GetMapping("/validate")
     public String validateToken(@RequestParam String token, @RequestParam String username) {
