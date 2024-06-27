@@ -39,21 +39,16 @@ public class JwtFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-
         String authorizationHeader = request.getHeader("Authorization");
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             sendErrorResponse(response, "Unauthorized: Bearer token is missing or malformed");
             return;
         }
-
-        // "Bearer " 뒤에 토큰이 없는 경우
         String token = authorizationHeader.substring(7);
         if (token == null || token.trim().isEmpty() || "undefined".equals(token)) {
             sendErrorResponse(response, "Unauthorized: Token is null, empty or undefined");
             return;
         }
-
         try {
             String username = jwtUtil.extractUsername(token);
             if (!jwtUtil.validateToken(token, username)) {
@@ -71,7 +66,6 @@ public class JwtFilter extends OncePerRequestFilter {
             sendErrorResponse(response, "Unauthorized: Invalid token");
             return;
         }
-
         chain.doFilter(request, response);
     }
 
