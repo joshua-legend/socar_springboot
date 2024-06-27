@@ -32,6 +32,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claim("username", user.getUsername())
                 .claim("authorities", authorities)
+                .setSubject(user.getUsername()) // 사용자 이름을 주제로 설정
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 10))
                 .signWith(key)

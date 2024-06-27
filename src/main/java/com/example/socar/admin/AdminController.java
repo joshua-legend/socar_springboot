@@ -58,6 +58,8 @@ public class AdminController {
                 Authentication auth = authenticationManagerBuilder.getObject().authenticate(authToken);
                 SecurityContextHolder.getContext().setAuthentication(auth);
                 String jwt = JwtUtil.generateToken(SecurityContextHolder.getContext().getAuthentication());
+
+
                 // JWT 토큰을 쿠키에 설정
                 Cookie cookie = new Cookie("jwt-token", jwt);
                 cookie.setHttpOnly(false); // XSS 공격 방지 true이면 자바스크립트로 확인 불가능함 ㅅㄱ

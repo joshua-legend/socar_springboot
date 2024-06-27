@@ -3,6 +3,8 @@ package com.example.socar.jwt;
 import com.example.socar.ApiResponse;
 import com.example.socar.admin.AdminDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,21 +54,23 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtUtil.extractUsername(token);
-        if (username == null || SecurityContextHolder.getContext().getAuthentication() != null) {
-            sendErrorResponse(response, "Unauthorized: Invalid token or user already authenticated");
+        try {
+            String username = jwtUtil.extractUsername(token);
+            if (!jwtUtil.validateToken(token, username)) {
+                sendErrorResponse(response, "Unauthorized: Invalid token");
+                return;
+            }
+            var userDetails = adminDetailsService.loadUserByUsername(username);
+            var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        } catch (ExpiredJwtException e) {
+            sendErrorResponse(response, "Unauthorized: Token has expired");
             return;
-        }
-
-        if (!jwtUtil.validateToken(token, username)) {
+        } catch (JwtException e) {
             sendErrorResponse(response, "Unauthorized: Invalid token");
             return;
         }
-
-        var userDetails = adminDetailsService.loadUserByUsername(username);
-        var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
 
         chain.doFilter(request, response);
     }
