@@ -33,8 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        System.out.println(excludeUrls.stream().anyMatch(url -> url.equals(requestURI)));
-        if (requestURI.equals("/api/admin/login")) {
+        if (excludeUrls.stream().anyMatch(url -> url.equals(requestURI))) {
             chain.doFilter(request, response);
             return;
         }

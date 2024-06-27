@@ -44,9 +44,7 @@ public class SecurityConfig {
                 // 요청에 대한 보안 규칙을 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
                         // **로 끝나는 모든 경로는 인증 없이 접근할 수 있도록 허용합니다.
-                        .requestMatchers("/api/admin/login","/api/car/all").permitAll() // 예: "/home", "/about", 등
-//                                .requestMatchers("**").permitAll() // 예: "/home", "/about", 등
-                        // 그 외의 모든 요청은 인증이 필요합니다.
+                        .requestMatchers("**").permitAll() // 예: "/home", "/about", 등
                         .anyRequest().authenticated()
                 ).
         addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

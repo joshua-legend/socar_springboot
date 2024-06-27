@@ -22,7 +22,6 @@ public class AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
-
     public Admin getAdminByAdminId(String adminId) {
         return adminRepository.findByAdminId(adminId);
     }
