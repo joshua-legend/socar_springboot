@@ -55,12 +55,13 @@ public class AdminController {
         try {
             Admin existingAdmin = adminService.getAdminByAdminId(admin.getAdminId());
             if (existingAdmin != null && passwordEncoder.matches(admin.getPassword(), existingAdmin.getPassword())) {
-                var authToken = new UsernamePasswordAuthenticationToken(admin.getAdminId(), admin.getPassword());
-                Authentication auth = authenticationManager.authenticate(authToken);
+//                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(admin.getAdminId(), admin.getPassword());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(admin.getAdminId(), admin.getPassword());
+                Authentication auth = authenticationManager.authenticate(authentication);
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-                String jwt = jwtUtil.generateToken(auth);
+                String jwt = JwtUtil.generateToken(auth);
 
                 // JWT 토큰을 쿠키에 설정
                 Cookie cookie = new Cookie("jwt-token", jwt);
