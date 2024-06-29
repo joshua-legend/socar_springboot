@@ -39,9 +39,6 @@ public class AdminController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
 
     @PostMapping("/api/admin/register")
     public ResponseEntity<String> register(@RequestBody Admin admin){
@@ -65,19 +62,12 @@ public class AdminController {
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
             String jwt = JwtUtil.generateToken(admin);
 
             // JWT를 응답 헤더에 설정
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + jwt);
-            System.out.println(jwt);
-            // JWT 토큰을 쿠키에 설정
-//            Cookie cookie = new Cookie("jwt-token", jwt);
-//            cookie.setHttpOnly(true); // JavaScript에서 접근 가능
-//            cookie.setSecure(false); // HTTPS에서만 사용 (개발 중에는 필요에 따라 false로 설정)
-//            cookie.setPath("/"); // 쿠키의 유효 경로 설정
-//            cookie.setMaxAge(60); // 쿠키의 유효기간 설정 (예: 1분)
-//            response.addCookie(cookie);
 
             ApiResponse<String> apiResponse = new ApiResponse<>("success", 200, 1, "Login successful");
             return ResponseEntity.ok().headers(headers).body(apiResponse);
@@ -99,6 +89,14 @@ public class AdminController {
                 cookie.setHttpOnly(false);
                 cookie.setPath("/");
                 response.addCookie(cookie);
+
+                // JWT 토큰을 쿠키에 설정
+//            Cookie cookie = new Cookie("jwt-token", jwt);
+//            cookie.setHttpOnly(true); // JavaScript에서 접근 가능
+//            cookie.setSecure(false); // HTTPS에서만 사용 (개발 중에는 필요에 따라 false로 설정)
+//            cookie.setPath("/"); // 쿠키의 유효 경로 설정
+//            cookie.setMaxAge(60); // 쿠키의 유효기간 설정 (예: 1분)
+//            response.addCookie(cookie);
                 return ResponseEntity.ok("Login successful");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid admin ID or password");

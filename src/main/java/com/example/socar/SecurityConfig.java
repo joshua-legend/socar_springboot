@@ -28,17 +28,9 @@ public class SecurityConfig {
         this.jwtUtil = jwtUtil;
     }
 
-
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(adminDetailsService).passwordEncoder(passwordEncoder());
-        return authenticationManagerBuilder.build();
     }
 
     @Bean
@@ -56,7 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("**").permitAll() // 예: "/home", "/about", 등
                         .anyRequest().authenticated()
                 ).
-        addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

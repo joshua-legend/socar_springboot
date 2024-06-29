@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
@@ -59,10 +58,10 @@ public class JwtUtil {
                     .parseClaimsJws(token);
             return true; // 토큰이 유효함
         } catch (ExpiredJwtException e) {
-            System.out.println("token is 10000ryo");
+            System.out.println("token is over");
             return false; // 토큰이 만료됨
         } catch (JwtException e) {
-            System.out.println("token is not youhyo");
+            System.out.println("token is invalid");
             return false; // 토큰이 유효하지 않음
         }
     }
